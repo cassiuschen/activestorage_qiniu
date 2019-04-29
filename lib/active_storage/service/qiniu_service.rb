@@ -154,7 +154,7 @@ module ActiveStorage
 
     def generate_uptoken(key=nil, expires_in=nil)
       expires_in ||= 3600
-      put_policy = Qiniu::Auth::PutPolicy.new("#{bucket}:#{key}", key, expires_in)
+      put_policy = Qiniu::Auth::PutPolicy.new(bucket, key, expires_in)
       
       # Set For Art1st
       queue = "production-queue"
@@ -163,7 +163,7 @@ module ActiveStorage
       upload_options.slice(*Qiniu::Auth::PutPolicy::PARAMS.keys).each do |k, v|
         put_policy.send("#{k}=", v)
       end
-
+      put_policy.scope = "#{bucket}:#{key}"
       Qiniu::Auth.generate_uptoken(put_policy)
     end
   end
